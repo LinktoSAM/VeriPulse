@@ -8,3 +8,4 @@ export const config = {
   clientOrigin: process.env.CLIENT_ORIGIN || 'http://localhost:5173',
   maxFileSizeMb: parseInt(process.env.MAX_FILE_SIZE_MB || '25', 10),
 };
+

@@ -107,6 +107,124 @@ const SEED_SAMPLES = [
     ],
   },
   {
+    id: 'aud_v391b82',
+    createdAt: new Date('2026-11-19T10:15:00.000Z'),
+    inputType: 'audio',
+    inputSummary: '42-second audio note of Chief Election Commissioner postponing state elections.',
+    isDemoSample: true,
+    overallScore: 12,
+    verdict: 'FALSE / LIKELY DEEPFAKE',
+    executiveSummary: 'The audio sample matches known voice synthesis cloning vectors with zero background room reverberation and artificial formant shifts. The Election Commission of India has issued no postponement.',
+    subScores: { claimIntegrity: 5, mediaForensics: 15, provenance: 25 },
+    claims: [
+      {
+        claimText: 'State legislative assembly elections postponed indefinitely by ECI order.',
+        status: 'FALSE',
+        explanation: 'Election Commission of India confirmed current polling schedules stand unchanged without any postponement orders.',
+        citations: [
+          {
+            title: 'Election Commission of India Press Releases & Clarifications',
+            url: 'https://eci.gov.in/',
+            domain: 'eci.gov.in',
+          },
+        ],
+      },
+    ],
+    forensics: {
+      mediaAnalyzed: true,
+      synthesisLikelihood: 'HIGH',
+      anomalies: [
+        {
+          category: 'VOCODER_ARTIFACTS',
+          severity: 'HIGH',
+          timestampOrRegion: '00:08 - 00:36',
+          detail: 'Distinctive metallic vocoder phasing and robotic glottal pulse spacing detected in high frequency bands (above 7.5 kHz).',
+        },
+      ],
+    },
+    metadata: {
+      fileName: 'eci_urgent_announcement.mp3',
+      mimeType: 'audio/mpeg',
+      fileSizeBytes: 684200,
+      cameraOrSoftware: 'ElevenLabs SpeechSynth / LAME 3.100',
+      hasC2PA: false,
+      flags: ['AI vocal synthesizer encoder signature detected in frame padding'],
+    },
+    originTimeline: [
+      {
+        date: '2026-11-18',
+        stage: 'FIRST_SEEN',
+        source: 'Encrypted Telegram Group',
+        description: 'First uploaded as an anonymous voice message in regional political discussion channels.',
+      },
+      {
+        date: '2026-11-19',
+        stage: 'OFFICIAL_RESPONSE',
+        source: 'ECI Official Spokesperson',
+        description: 'ECI issued a formal clarification and filed an FIR regarding synthetic voice tampering.',
+      },
+    ],
+  },
+  {
+    id: 'aud_f812a0c',
+    createdAt: new Date('2026-11-18T16:45:00.000Z'),
+    inputType: 'video',
+    inputSummary: '35-second video alleging catastrophic dam collapse in Uttarakhand hills today.',
+    isDemoSample: true,
+    overallScore: 34,
+    verdict: 'MISLEADING / ALTERED',
+    executiveSummary: 'Footage is genuine flood video, but represents a serious contextual falsification: reverse-search and visual landmark forensics prove the clip was filmed in Kaziranga, Assam during 2019 monsoons.',
+    subScores: { claimIntegrity: 15, mediaForensics: 72, provenance: 18 },
+    claims: [
+      {
+        claimText: 'Major dam breach in Uttarakhand triggering mass evacuations today.',
+        status: 'MISLEADING',
+        explanation: 'State Disaster Response Force (SDRF) and CWC dam telemetry confirm zero structural failures or breach alerts in Uttarakhand.',
+        citations: [
+          {
+            title: 'Central Water Commission (CWC) Daily Reservoir Level Bulletin',
+            url: 'https://cwc.gov.in/',
+            domain: 'cwc.gov.in',
+          },
+        ],
+      },
+    ],
+    forensics: {
+      mediaAnalyzed: true,
+      synthesisLikelihood: 'LOW',
+      anomalies: [
+        {
+          category: 'SEMANTIC_VISUAL_MISMATCH',
+          severity: 'HIGH',
+          timestampOrRegion: '00:03 - 00:28 (background terrain & vegetation)',
+          detail: 'Vegetation features lowland alluvial flora inconsistent with Himalayan alpine topography claimed in text.',
+        },
+      ],
+    },
+    metadata: {
+      fileName: 'dam_burst_urgent_alert.mp4',
+      mimeType: 'video/mp4',
+      fileSizeBytes: 8940120,
+      cameraOrSoftware: 'WhatsApp Video Encoder v2.24',
+      hasC2PA: false,
+      flags: ['EXIF geolocation coordinates stripped by social app'],
+    },
+    originTimeline: [
+      {
+        date: '2019-07-16',
+        stage: 'FIRST_SEEN',
+        source: 'Regional Guwahati News Telecast',
+        description: 'Original authentic recording of Brahmaputra water rise in Kaziranga National Park.',
+      },
+      {
+        date: '2026-11-18',
+        stage: 'MUTATION',
+        source: 'Anonymous Social Account',
+        description: 'Reposted with sensationalized geotag "Uttarakhand Tehri overflow".',
+      },
+    ],
+  },
+  {
     id: 'aud_isro_99a',
     createdAt: new Date('2026-11-19T09:00:00.000Z'),
     inputType: 'text',
@@ -151,6 +269,22 @@ const SEED_SAMPLES = [
 
 for (const sample of SEED_SAMPLES) {
   inMemoryReports.set(sample.id, sample);
+}
+
+export async function seedDatabase(): Promise<void> {
+  if (!isDbConnected()) return;
+  try {
+    for (const sample of SEED_SAMPLES) {
+      await AuditReportModel.updateOne(
+        { id: sample.id },
+        { $setOnInsert: sample },
+        { upsert: true }
+      );
+    }
+    console.log('✅ Preloaded demo audit reports synchronized to MongoDB Atlas');
+  } catch (err) {
+    console.warn('Could not sync sample audits to database:', err);
+  }
 }
 
 // -------------------------------------------------------------

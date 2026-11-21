@@ -26,3 +26,4 @@ export async function connectDB(): Promise<boolean> {
 export function isDbConnected(): boolean {
   return isConnected;
 }
+

@@ -2,7 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { config } from './config/env.js';
 import { connectDB } from './config/db.js';
-import { auditRouter } from './routes/audit.js';
+import { auditRouter, seedDatabase } from './routes/audit.js';
 
 const app = express();
 
@@ -39,6 +39,7 @@ app.get('/', (_req, res) => {
 // Start Server
 async function startServer() {
   await connectDB();
+  await seedDatabase();
 
   app.listen(config.port, () => {
     console.log(`🚀 VeriPulse API server running on port ${config.port}`);
@@ -51,3 +52,4 @@ startServer().catch((err) => {
   console.error('Fatal startup error:', err);
   process.exit(1);
 });
+

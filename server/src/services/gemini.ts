@@ -17,3 +17,4 @@ export function getGeminiClient(): GoogleGenAI | null {
 export function isGeminiConfigured(): boolean {
   return Boolean(config.geminiApiKey && config.geminiApiKey.length > 5);
 }
+

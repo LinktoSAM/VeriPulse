@@ -128,3 +128,4 @@ export async function parseMediaMetadata(
 
   return { metadata, provenanceScore: provScore };
 }
+

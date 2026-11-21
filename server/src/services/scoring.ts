@@ -39,3 +39,4 @@ export function calculateAuthenticityScore(
 
   return { overallScore: score, verdict };
 }
+
